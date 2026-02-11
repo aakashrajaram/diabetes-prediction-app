@@ -1,90 +1,49 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import load_diabetes
 
-# ----------------------------
-# Page Config
-# ----------------------------
 st.set_page_config(page_title="Diabetes Prediction", page_icon="🩺", layout="centered")
 
-# ----------------------------
-# Custom CSS for Modern UI
-# ----------------------------
+# Modern UI CSS
 st.markdown("""
-    <style>
-    .main {
-        background: linear-gradient(to right, #4facfe, #00f2fe);
-    }
-    .title {
-        text-align: center;
-        font-size: 40px;
-        font-weight: bold;
-        color: white;
-        margin-bottom: 20px;
-    }
-    .card {
-        background-color: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    .stButton>button {
-        background-color: #4facfe;
-        color: white;
-        border-radius: 10px;
-        height: 50px;
-        width: 100%;
-        font-size: 18px;
-        border: none;
-    }
-    </style>
+<style>
+.title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+.stButton>button {
+    background-color: #4facfe;
+    color: white;
+    border-radius: 10px;
+    height: 50px;
+    width: 100%;
+    font-size: 18px;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# ----------------------------
-# Load and Train Model
-# ----------------------------
-data = load_diabetes()
-X = data.data
-y = (data.target > data.target.mean()).astype(int)
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-
-model = LogisticRegression()
-model.fit(X_train, y_train)
-
-# ----------------------------
-# Sidebar Navigation
-# ----------------------------
 page = st.sidebar.radio("Navigation", ["Home", "Diabetes Prediction"])
 
-# ----------------------------
-# Home Page
-# ----------------------------
 if page == "Home":
     st.markdown('<div class="title">Diabetes Prediction with Machine Learning</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="card">
     <h3>Welcome 👋</h3>
-    <p>This intelligent system predicts whether a person has diabetes 
-    based on medical inputs using Machine Learning.</p>
-    <p>👉 Navigate to <b>Diabetes Prediction</b> from the sidebar to begin.</p>
+    <p>This intelligent system predicts diabetes risk based on medical inputs.</p>
+    <p>Navigate to <b>Diabetes Prediction</b> from the sidebar.</p>
     </div>
     """, unsafe_allow_html=True)
 
-# ----------------------------
-# Prediction Page
-# ----------------------------
 elif page == "Diabetes Prediction":
 
     st.markdown('<div class="title">Check Your Diabetes Risk</div>', unsafe_allow_html=True)
-
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
@@ -101,12 +60,19 @@ elif page == "Diabetes Prediction":
 
     if st.button("Predict Now"):
 
-        input_data = np.array([[age, glucose, bp, insulin, skin, bmi, 0, 0, 0, 0]])
-        input_data = scaler.transform(input_data)
+        # Simple Risk Logic (Lightweight ML-like scoring)
+        score = 0
+        
+        if glucose > 140:
+            score += 1
+        if bmi > 30:
+            score += 1
+        if age > 45:
+            score += 1
+        if bp > 90:
+            score += 1
 
-        prediction = model.predict(input_data)
-
-        if prediction[0] == 1:
+        if score >= 2:
             st.error("⚠ Oops! You have DIABETES")
         else:
             st.success("✅ Great! You DON'T have diabetes")
